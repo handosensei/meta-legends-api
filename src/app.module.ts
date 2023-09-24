@@ -25,12 +25,14 @@ import { MintPackageModule } from './mint-package/mint-package.module';
 import { RewardModule } from './reward/reward.module';
 import { UtilsModule } from './utils/utils.module';
 import { UserModule } from './user/user.module';
+import { WalletModule } from './wallet/wallet.module';
 
 import { Legend } from './legend/legend.entity';
 import { MintPackage } from './mint-package/mint-package.entity';
 import { OgPet } from './eligibility/og-pet/og-pet.entity';
 import { Unstaked } from './reward/unstaked/unstaked.entity';
 import { User } from './user/user.entity';
+import { Wallet } from './wallet/wallet.entity';
 
 import { AuthMiddleware } from './middleware/auth.middleware';
 import { TestService } from './command/test/test.service';
@@ -75,7 +77,16 @@ import { UserService } from './user/user.service';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [HoldingReward, Legend, MintPackage, OgPet, Unstaked, User],
+      entities: [
+        MintPackage,
+        Unstaked,
+        Legend,
+        OgPet,
+        User,
+        Asset,
+        HoldingReward,
+        Wallet,
+      ],
       synchronize: true,
     }),
     AuthModule,
@@ -87,6 +98,7 @@ import { UserService } from './user/user.service';
     UserModule,
     HoldingRewardModule,
     CollectionsModule,
+    WalletModule,
   ],
   controllers: [
     AppController,

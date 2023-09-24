@@ -8,6 +8,7 @@ import {
 import { OgPet } from '../eligibility/og-pet/og-pet.entity';
 import { HoldingReward } from '../holding-reward/holding-reward.entity';
 import { Exclude } from 'class-transformer';
+import { Wallet } from '@src/wallet/wallet.entity';
 
 @Entity()
 export class User {
@@ -72,4 +73,7 @@ export class User {
 
   @OneToMany(() => HoldingReward, (holdingReward) => holdingReward.user)
   holdingRewards: HoldingReward[];
+
+  @OneToMany(() => Wallet, (wallet) => wallet.user)
+  wallets: Wallet[];
 }
