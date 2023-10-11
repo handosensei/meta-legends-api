@@ -257,4 +257,9 @@ export class LegendService {
   async findAll(): Promise<Legend[]> {
     return await this.legendRepository.find();
   }
+
+  async update(legend: Legend): Promise<Legend> {
+    await this.legendRepository.save(legend);
+    return legend;
+  }
 }
