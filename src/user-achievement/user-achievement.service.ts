@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 
 import { UserAchievement } from '@src/user-achievement/user-achievement.entity';
 import { User } from '@src/user/user.entity';
+import { UserService } from '@src/user/user.service';
 
 @Injectable()
 export class UserAchievementService {

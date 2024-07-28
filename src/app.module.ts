@@ -72,6 +72,7 @@ import { BadgeRewardService } from './command/badge-reward/badge-reward.service'
 import { AchievementService } from './achievement/achievement.service';
 import { UserAchievementService } from './user-achievement/user-achievement.service';
 import { UserAchievement } from '@src/user-achievement/user-achievement.entity';
+import { AchievementService as AchievementCommand } from './command/achievement/achievement.service';
 
 @Module({
   imports: [
@@ -125,6 +126,7 @@ import { UserAchievement } from '@src/user-achievement/user-achievement.entity';
     AlchemyService,
     AppService,
     AchievementService,
+    AchievementCommand,
     BadgeRewardService,
     BadgeService,
     CouncilStoneService,

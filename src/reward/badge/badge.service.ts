@@ -46,4 +46,9 @@ export class BadgeService {
       [PERK_BADGE_SNIPER_RIFLE_CELESTIAL]: initValue,
     };
   }
+
+  defineBadgeReward(nbNftHold: number) {
+    return [];
+  }
+
 }

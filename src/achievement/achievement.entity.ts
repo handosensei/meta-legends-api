@@ -10,7 +10,10 @@ export class Achievement {
   category: string;
 
   @Column('varchar', { length: 63 })
-  name: string;
+  code: string;
+
+  @Column('varchar', { length: 63 })
+  label: string;
 
   @Column('varchar', { length: 255, nullable: true })
   description: string;
