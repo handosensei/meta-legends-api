@@ -4,11 +4,8 @@ import { Command, CommandRunner } from 'nest-commander';
 import { readFile } from 'fs';
 import { UserService } from '@src/user/user.service';
 
-// import {UserAchievement} from "@src/user-achievement/user-achievement.entity";
-// import {BadgeService} from "@src/reward/badge/badge.service";
-// import {UserAchievementService} from "@src/user-achievement/user-achievement.service";
-import {AchievementService as AchievService} from "@src/achievement/achievement.service";
-import {UserAchievementService} from "@src/user-achievement/user-achievement.service";
+import { AchievementService as AchievService } from '@src/achievement/achievement.service';
+import { UserAchievementService } from '@src/user-achievement/user-achievement.service';
 
 // npm run command-nest achievement-define
 @Command({
@@ -28,8 +25,10 @@ export class AchievementService extends CommandRunner {
   }
 
   async run() {
-    const allAchievements = await this.achievService.getAllByCategory('badge-reward');
-    const achivements = this.achievService.orderByCode(allAchievements);
+    const allAchievements = await this.achievService.getAllByCategory(
+      'badge-reward',
+    );
+    const achievements = this.achievService.orderByCode(allAchievements);
     readFile(
       __dirname + '/20240727131213_badge-rewards.csv',
       'utf-8',
@@ -41,8 +40,18 @@ export class AchievementService extends CommandRunner {
           for (const row of rows) {
             const data = row.split(',');
             const user = await this.userService.findOne(data[0]);
+    //         const userAchievements =
+    //           this.userAchievementService.defi neHoldingRewardAchievements(
+    //             user,
+    //             achievements,
+    //             data[1],
+    //           );
+    //         // this.userAchievementService.save(userAchievements);
+    //         console.log(userAchievements);
+    //         return;
           }
         }
-      });
+      },
+    );
   }
 }
