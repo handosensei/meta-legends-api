@@ -28,6 +28,7 @@ import { EligibilityModule } from './eligibility/eligibility.module';
 import { HoldingRewardModule } from './holding-reward/holding-reward.module';
 import { MintPackageModule } from './mint-package/mint-package.module';
 import { LandModule } from './land/land.module';
+import { MetadataModule } from './metadata/metadata.module';
 import { RewardModule } from './reward/reward.module';
 import { UtilsModule } from './utils/utils.module';
 import { UserModule } from './user/user.module';
@@ -41,6 +42,12 @@ import { Land } from './land/land.entity';
 import { LandMinted } from '@src/land/land-minted/land-minted.entity';
 import { Unstaked } from './reward/unstaked/unstaked.entity';
 import { User } from './user/user.entity';
+import { Collection } from './metadata/entity/collection.entity';
+import { TraitType } from './metadata/entity/trait-type.entity';
+import { Attribute } from './metadata/entity/attribute.entity';
+import { Token } from './metadata/entity/token.entity';
+import { Rank } from './metadata/entity/rank.entity';
+import { TokenAttribute } from './metadata/entity/token-attribute.entity';
 
 import { AchievementService as AchievementCommand } from './command/achievement/achievement.service';
 import { TestService } from './command/test/test.service';
@@ -113,6 +120,12 @@ import { LandContentService } from './command/land-content/land-content.service'
         Unstaked,
         User,
         UserAchievement,
+        Collection,
+        TraitType,
+        Attribute,
+        Token,
+        Rank,
+        TokenAttribute,
       ],
       synchronize: true,
     }),
@@ -126,6 +139,7 @@ import { LandContentService } from './command/land-content/land-content.service'
     HoldingRewardModule,
     CollectionsModule,
     LandModule,
+    MetadataModule,
   ],
   controllers: [
     AppController,
