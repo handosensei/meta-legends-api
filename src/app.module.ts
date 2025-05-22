@@ -91,6 +91,7 @@ import { UserService } from './user/user.service';
 import { WeaponSkinService } from '@src/collections/weapon-skin/weapon-skin.service';
 import {LandContent} from "@src/land/land-content/land-content.entity";
 import { LandContentService } from './command/land-content/land-content.service';
+import { DumpService } from '@src/command/metadata/dump/dump.service';
 
 @Module({
   imports: [
@@ -198,6 +199,7 @@ import { LandContentService } from './command/land-content/land-content.service'
     UserAchievementService,
     CollectionService,
     LandContentService,
+    DumpService,
   ],
 })
 export class AppModule {
