@@ -130,6 +130,13 @@ import { DumpService } from '@src/command/metadata/dump/dump.service';
         TokenAttribute,
       ],
       synchronize: true,
+      extra: {
+        connectionLimit: 10,
+      },
+      // Add reconnection settings
+      retryAttempts: 10,
+      retryDelay: 3000,
+      keepConnectionAlive: true,
     }),
     AuthModule,
     UtilsModule,

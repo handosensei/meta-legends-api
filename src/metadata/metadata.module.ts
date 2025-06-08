@@ -11,6 +11,7 @@ import { TokenAttribute } from './entity/token-attribute.entity';
 import { LandModule } from '@src/land/land.module';
 import { CollectionService } from '@src/metadata/service/collection.service';
 import { TraitTypeService } from './service/trait-type.service';
+import { AttributeService } from './service/attribute.service';
 
 @Module({
   imports: [
@@ -24,8 +25,19 @@ import { TraitTypeService } from './service/trait-type.service';
     ]),
     LandModule,
   ],
-  exports: [TypeOrmModule, MetadataService, CollectionService],
+  exports: [
+    TypeOrmModule,
+    MetadataService,
+    CollectionService,
+    TraitTypeService,
+    AttributeService,
+  ],
   controllers: [LandController],
-  providers: [MetadataService, CollectionService, TraitTypeService],
+  providers: [
+    MetadataService,
+    CollectionService,
+    TraitTypeService,
+    AttributeService,
+  ],
 })
 export class MetadataModule {}
