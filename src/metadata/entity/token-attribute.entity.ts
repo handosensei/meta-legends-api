@@ -8,10 +8,10 @@ export class TokenAttribute {
   id: number;
 
   @Column('int', { nullable: true })
-  attribute_id: number;
+  attributeId: number;
 
   @Column('int', { nullable: true })
-  token_id: number;
+  tokenId: number;
 
   @ManyToOne(() => Attribute, (attribute) => attribute.tokenAttributes)
   attribute: Attribute;

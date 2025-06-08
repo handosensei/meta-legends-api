@@ -9,7 +9,7 @@ export class Token {
   id: number;
 
   @Column('int', { nullable: true })
-  collection_id: number;
+  collectionId: number;
 
   @Column('int', { nullable: false })
   token: number;

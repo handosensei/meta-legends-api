@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Collection } from './collection.entity';
 import { TraitType } from './trait-type.entity';
 import { TokenAttribute } from './token-attribute.entity';
@@ -9,10 +15,10 @@ export class Attribute {
   id: number;
 
   @Column('int', { nullable: true })
-  trait_type_id: number;
+  traitTypeId: number;
 
   @Column('int', { nullable: true })
-  collection_id: number;
+  collectionId: number;
 
   @Column('varchar', { nullable: true, length: 255 })
   value: string;
