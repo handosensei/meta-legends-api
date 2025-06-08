@@ -8,7 +8,7 @@ export class TraitType {
   id: number;
 
   @Column('int', { nullable: true })
-  collection_id: number;
+  collectionId: number;
 
   @Column('varchar', { nullable: false, length: 255 })
   name: string;

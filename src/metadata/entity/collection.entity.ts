@@ -22,7 +22,7 @@ export class Collection {
   supply: number;
 
   @Column('varchar', { nullable: false, length: 255, unique: true })
-  identifier: string;
+  contract: string;
 
   @Column('varchar', { nullable: true, length: 255 })
   trait_file_extension: string;
