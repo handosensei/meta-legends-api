@@ -111,6 +111,7 @@ import { DumpService } from '@src/command/metadata/dump/dump.service';
       database: process.env.DATABASE_NAME,
       entities: [
         Achievement,
+        Collection,
         HoldingReward,
         Legend,
         MintPackage,
