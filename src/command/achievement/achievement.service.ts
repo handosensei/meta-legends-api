@@ -7,8 +7,7 @@ import path = require('path');
 import { AchievementService as AchievService } from '@src/achievement/achievement.service';
 import { UserService } from '@src/user/user.service';
 import { UserAchievementService } from '@src/user-achievement/user-achievement.service';
-import {HoldingReward} from "@src/holding-reward/holding-reward.entity";
-import {UserAchievement} from "@src/user-achievement/user-achievement.entity";
+import { UserAchievement } from '@src/user-achievement/user-achievement.entity';
 import { DataSource } from 'typeorm/data-source/DataSource';
 // npm run command-nest achievement-define
 @Command({

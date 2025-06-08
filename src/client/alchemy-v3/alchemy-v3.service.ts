@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RuntimeException } from '@nestjs/core/errors/exceptions';
-import { Collection } from 'typeorm';
-import axios from "axios";
+import axios from 'axios';
 
 export const ETHEREUM_MAINNET = 'mainnet';
 export const ETHEREUM_TESTNET = 'sepolia';
