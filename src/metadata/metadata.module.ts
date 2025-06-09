@@ -12,6 +12,7 @@ import { LandModule } from '@src/land/land.module';
 import { CollectionService } from '@src/metadata/service/collection.service';
 import { TraitTypeService } from './service/trait-type.service';
 import { AttributeService } from './service/attribute.service';
+import { TokenAttributeService } from './service/token-attribute.service';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AttributeService } from './service/attribute.service';
     CollectionService,
     TraitTypeService,
     AttributeService,
+    TokenAttributeService,
   ],
 })
 export class MetadataModule {}

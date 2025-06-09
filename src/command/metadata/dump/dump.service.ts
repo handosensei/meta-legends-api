@@ -40,16 +40,20 @@ export class DumpService extends CommandRunner {
       name,
       blockchain,
     );
+
+    // TOKEN_ATTRIBUTE_SAVED
     const pathDirectory = this.collectionService.getPathDirectory(collection);
     const traitTypes = await this.traitTypeService.saveTraitTypes(
       collection,
       pathDirectory,
     );
-    await this.attributeService.saveAttributes(
+    const attributes = await this.attributeService.saveAttributes(
       collection,
       traitTypes,
       pathDirectory,
     );
+    await this.tokenAttributeService.saveTokenAttributes(attributes, pathDirectory);
+
 
     //   DumpService.logger.log(test);
     // } catch (error) {
