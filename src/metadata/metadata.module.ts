@@ -1,6 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { LandModule } from '@src/land/land.module';
+
 import { MetadataService } from './metadata.service';
+
 import { LandController } from './land/land.controller';
 import { Collection } from './entity/collection.entity';
 import { TraitType } from './entity/trait-type.entity';
@@ -8,11 +12,12 @@ import { Attribute } from './entity/attribute.entity';
 import { Token } from './entity/token.entity';
 import { Rank } from './entity/rank.entity';
 import { TokenAttribute } from './entity/token-attribute.entity';
-import { LandModule } from '@src/land/land.module';
-import { CollectionService } from '@src/metadata/service/collection.service';
+
+import { CollectionService } from './service/collection.service';
 import { TraitTypeService } from './service/trait-type.service';
 import { AttributeService } from './service/attribute.service';
 import { TokenAttributeService } from './service/token-attribute.service';
+import { TokenService } from './service/token.service';
 
 @Module({
   imports: [
@@ -32,6 +37,8 @@ import { TokenAttributeService } from './service/token-attribute.service';
     CollectionService,
     TraitTypeService,
     AttributeService,
+    TokenAttributeService,
+    TokenService,
   ],
   controllers: [LandController],
   providers: [
@@ -40,6 +47,7 @@ import { TokenAttributeService } from './service/token-attribute.service';
     TraitTypeService,
     AttributeService,
     TokenAttributeService,
+    TokenService,
   ],
 })
 export class MetadataModule {}
