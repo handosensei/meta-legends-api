@@ -12,13 +12,16 @@ export class Token {
   collectionId: number;
 
   @Column('int', { nullable: false })
-  token: number;
+  number: number;
 
-  @Column('varchar', { nullable: false, length: 255 })
+  @Column('varchar', { nullable: true })
   name: string;
 
-  @Column('varchar', { nullable: false, length: 255 })
-  image_url: string;
+  @Column('varchar', { nullable: true, length: 255 })
+  imageUrl: string;
+
+  @Column('varchar', { nullable: true })
+  animationUrl: string;
 
   @ManyToOne(() => Collection, (collection) => collection.tokens)
   collection: Collection;
