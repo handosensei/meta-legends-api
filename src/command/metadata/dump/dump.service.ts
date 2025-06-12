@@ -8,8 +8,9 @@ import {
   ATTRIBUTE_PERCENT_PROCESSED,
   RANK_EXECUTED,
 } from '@src/enum/metadata-dump';
-import { TraitTypeService } from "@src/metadata/service/trait-type.service";
-import { AttributeService } from "@src/metadata/service/attribute.service";
+import { TraitTypeService } from '@src/metadata/service/trait-type.service';
+import { AttributeService } from '@src/metadata/service/attribute.service';
+import { TokenAttributeService } from '@src/metadata/service/token-attribute.service';
 /*
 npm run command-nest metadata-dump [contract] [name]
 npm run command-nest metadata-dump 0xf9c362cdd6eeba080dd87845e88512aa0a18c615 "Meta-Legends"
@@ -26,6 +27,7 @@ export class DumpService extends CommandRunner {
     private collectionService: CollectionService,
     private traitTypeService: TraitTypeService,
     private attributeService: AttributeService,
+    private tokenAttributeService: TokenAttributeService,
   ) {
     super();
   }
