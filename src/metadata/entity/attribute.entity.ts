@@ -5,6 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
 import { Collection } from './collection.entity';
 import { TraitType } from './trait-type.entity';
 import { TokenAttribute } from './token-attribute.entity';

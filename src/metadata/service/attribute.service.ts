@@ -23,10 +23,11 @@ export class AttributeService {
     collection: Collection,
     traitTypes: TraitType[],
     pathDirectory: string,
-  ): Promise<Attribute[]> {
+  ): Promise<void> {
     const files = fs.readdirSync(pathDirectory);
     const attributesToSave: Attribute[] = [];
     const attributesSaved: any[] = [];
+    let index = 0;
     for (const file of files) {
       if (file == '.DS_Store') {
         continue;
@@ -56,8 +57,11 @@ export class AttributeService {
           attributeExtract['value'],
         );
       }
+      if (index++ % 1000 === 0) {
+        await this.attributeRepository.save(attributesToSave);
+      }
     }
-    return await this.attributeRepository.save(attributesToSave);
+    await this.attributeRepository.save(attributesToSave);
   }
 
   sortByName(traitTypes: TraitType[]) {

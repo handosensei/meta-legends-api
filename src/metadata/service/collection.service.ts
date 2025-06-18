@@ -1,26 +1,30 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Collection } from '@src/metadata/entity/collection.entity';
-import { TraitType } from '@src/metadata/entity/trait-type.entity';
-import { TraitTypeService } from '@src/metadata/service/trait-type.service';
-import {
-  ATTRIBUTE_PERCENT_PROCESSED,
-  RANK_EXECUTED,
-  TOKEN_ATTRIBUTE_SAVED,
-  TRAIT_SAVED
-} from '@src/enum/metadata-dump';
+
 import fs = require('fs');
 import path = require('path');
 
+import { TraitTypeService } from '@src/metadata/service/trait-type.service';
+import { AttributeService } from '@src/metadata/service/attribute.service';
+
+import { Collection } from '@src/metadata/entity/collection.entity';
+import { TraitType } from '@src/metadata/entity/trait-type.entity';
+
+import {
+  ADDED,
+  RANK_EXECUTED,
+} from '@src/enum/metadata-dump';
+
 @Injectable()
 export class CollectionService {
-
   private static readonly logger = new Logger(CollectionService.name);
 
   constructor(
     @InjectRepository(Collection)
     private collectionRepository: Repository<Collection>,
+    private traitTypeService: TraitTypeService,
+    private attributeService: AttributeService,
   ) {}
 
   async getOneByContractOrCreate(
@@ -36,7 +40,7 @@ export class CollectionService {
     newCollection.contract = contract;
     newCollection.name = name;
     newCollection.blockchain = blockchain;
-    newCollection.status = TRAIT_SAVED;
+    newCollection.status = ADDED;
     try {
       return await this.collectionRepository.save(newCollection);
     } catch (error) {
@@ -48,12 +52,31 @@ export class CollectionService {
     return `data/metadata/${collection.blockchain}/${collection.contract}/`;
   }
 
-  processTokenAttributesBinding(collection: Collection): void {
+  async processSaveAttributes(collection: Collection): Promise<void> {
+    CollectionService.logger.log(
+      '[CollectionService] STEP 1 : Process token attributes binding',
+    );
+    const pathDirectory = this.getPathDirectory(collection);
+    try {
+      const traitTypes = await this.traitTypeService.saveTraitTypes(
+        collection,
+        pathDirectory,
+      );
+      await this.attributeService.saveAttributes(
+        collection,
+        traitTypes,
+        pathDirectory,
+      );
+    } catch (error) {
+      CollectionService.logger.error(
+        '[CollectionService] STEP 1 - Fail : Save trait type and attributes failed',
+      );
+    }
   }
 
-  processAttributePercent(collection: Collection): void {
+  processBindAttributes(collection: Collection): void {
+    const attributes = {};
   }
 
-  processRank(collection: Collection): void {
-  }
+  processRank(collection: Collection): void {}
 }
