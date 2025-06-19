@@ -5,16 +5,20 @@ import { Repository } from 'typeorm';
 import fs = require('fs');
 import path = require('path');
 
-import { TraitTypeService } from '@src/metadata/service/trait-type.service';
-import { AttributeService } from '@src/metadata/service/attribute.service';
+import { TraitTypeService } from './trait-type.service';
+import { AttributeService } from './attribute.service';
+import { TokenService } from './token.service';
 
 import { Collection } from '@src/metadata/entity/collection.entity';
 import { TraitType } from '@src/metadata/entity/trait-type.entity';
 
 import {
   ADDED,
+  ATTRIBUTE_SAVED,
+  ATTRIBUTE_BINDED,
   RANK_EXECUTED,
 } from '@src/enum/metadata-dump';
+
 
 @Injectable()
 export class CollectionService {
@@ -25,6 +29,7 @@ export class CollectionService {
     private collectionRepository: Repository<Collection>,
     private traitTypeService: TraitTypeService,
     private attributeService: AttributeService,
+    private tokenService: TokenService,
   ) {}
 
   async getOneByContractOrCreate(
@@ -74,8 +79,12 @@ export class CollectionService {
     }
   }
 
-  processBindAttributes(collection: Collection): void {
-    const attributes = {};
+  async processBindAttributes(collection: Collection): Promise<void> {
+    const attributes = await this.attributeService.findAll(collection);
+    const attributesDict = this.attributeService.sortAttributes(attributes);
+    const pathDirectory = this.getPathDirectory(collection);
+    const tokens = this.tokenService.createToken(collection, pathDirectory);
+    
   }
 
   processRank(collection: Collection): void {}

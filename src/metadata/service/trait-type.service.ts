@@ -20,7 +20,6 @@ export class TraitTypeService {
   async saveTraitTypes(collection: Collection, pathDirectory: string) {
     const files = fs.readdirSync(pathDirectory);
     const traitTypesToExtract = [];
-    // const traitTypesHandled: any[] = [];
     for (const file of files) {
       if (file == '.DS_Store') {
         continue;
@@ -31,25 +30,8 @@ export class TraitTypeService {
           const traitType = new TraitType();
           traitType.name = attributeExtract['trait_type'];
           traitType.collection = collection;
-          // traitType.attributes = [];
           traitTypesToExtract[attributeExtract['trait_type']] = traitType;
-          // traitTypesHandled[attributeExtract['trait_type']] = [];
         }
-        // if (
-        //   !traitTypesHandled[attributeExtract['trait_type']].includes(
-        //     attributeExtract['value'],
-        //   )
-        // ) {
-        //   const attribute = new Attribute();
-        //   attribute.value = attributeExtract['value'];
-        //   attribute.collection = collection;
-        //   traitTypesToExtract[attributeExtract['trait_type']].attributes.push(
-        //     attribute,
-        //   );
-        //   traitTypesHandled[attributeExtract['trait_type']].push(
-        //     attributeExtract['value'],
-        //   );
-        // }
       }
     }
     const keys = [...Object.keys(traitTypesToExtract)];

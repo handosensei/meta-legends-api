@@ -46,14 +46,17 @@ export class DumpService extends CommandRunner {
       while (collection.status !== RANK_EXECUTED) {
         switch (collection.status) {
           case ADDED:
+            // sauvegarde les traits et attributs de la colections
             this.collectionService.processSaveAttributes(collection);
             collection.status = ATTRIBUTE_SAVED;
             break;
           case ATTRIBUTE_SAVED:
+            // création de lien entre les tokens et les attributs
             this.collectionService.processBindAttributes(collection);
             collection.status = ATTRIBUTE_BINDED;
             break;
           case ATTRIBUTE_BINDED:
+            // calcul du pourcentage et ranking
             this.collectionService.processRank(collection);
             collection.status = RANK_EXECUTED;
             break;

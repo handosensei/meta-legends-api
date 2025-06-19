@@ -27,7 +27,6 @@ export class AttributeService {
     const files = fs.readdirSync(pathDirectory);
     const attributesToSave: Attribute[] = [];
     const attributesSaved: any[] = [];
-    let index = 0;
     for (const file of files) {
       if (file == '.DS_Store') {
         continue;
@@ -57,11 +56,19 @@ export class AttributeService {
           attributeExtract['value'],
         );
       }
-      if (index++ % 1000 === 0) {
+      if (attributesToSave.length % 1000 === 0) {
         await this.attributeRepository.save(attributesToSave);
+        attributesToSave.length = 0;
       }
     }
     await this.attributeRepository.save(attributesToSave);
+  }
+
+  async findAll(collection: Collection): Promise<Attribute[]> {
+    return await this.attributeRepository.find({
+      relations: { traitType: true },
+      where: { collection },
+    });
   }
 
   sortByName(traitTypes: TraitType[]) {
@@ -70,5 +77,22 @@ export class AttributeService {
       result[traitType.name] = traitType;
     });
     return result;
+  }
+
+  sortAttributes(attributes: Attribute[]) {
+    const attributesSorted = {};
+    for (const attribute of attributes) {
+      if (attribute.traitType.name in attributesSorted) {
+        const attributesFromTraitType =
+          attributesSorted[attribute.traitType.name];
+        if (attribute.value in attributesFromTraitType) {
+          continue;
+        }
+      } else {
+        attributesSorted[attribute.traitType.name] = {};
+      }
+      attributesSorted[attribute.traitType.name][attribute.value] = attribute;
+    }
+    return attributesSorted;
   }
 }

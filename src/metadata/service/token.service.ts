@@ -5,6 +5,9 @@ import { Repository } from 'typeorm';
 import { Token } from '../entity/token.entity';
 import { Collection } from '../entity/collection.entity';
 
+import fs = require('fs');
+import { TraitTypeService } from './trait-type.service';
+
 @Injectable()
 export class TokenService {
   private static readonly logger = new Logger(TokenService.name);
@@ -12,6 +15,7 @@ export class TokenService {
   constructor(
     @InjectRepository(Token)
     private tokenRepository: Repository<Token>,
+    private traitTypeService: TraitTypeService,
   ) {}
 
   buildToken(collection: Collection, metadata: any, file: string) {
@@ -36,5 +40,36 @@ export class TokenService {
     // console.log('fileNameWithoutExtension');
     // console.log(fileNameWithoutExtension);
     return Number(file);
+  }
+
+  async saveTokens(tokens: Token[]): Promise<Token[]> {
+    return await this.tokenRepository.save(tokens);
+  }
+
+  async createToken(
+    collection: Collection,
+    pathDirectory: string,
+  ): Promise<any[]> {
+    const files = fs.readdirSync(pathDirectory);
+    const tokens = [];
+    const tokensSaved = [];
+    for (const file of files) {
+      if (file == '.DS_Store') {
+        continue;
+      }
+      const metadata = this.traitTypeService.extractMetadataAttributes(
+        pathDirectory,
+        file,
+      );
+      const token = this.buildToken(collection, metadata, file);
+      tokens.push(token);
+      tokensSaved.push(token);
+      if (tokens.length % 1000 === 0) {
+        await this.tokenRepository.save(tokens);
+        tokens.length = 0;
+      }
+    }
+    await this.tokenRepository.save(tokens);
+    return tokensSaved;
   }
 }
