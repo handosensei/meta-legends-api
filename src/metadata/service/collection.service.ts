@@ -19,7 +19,6 @@ import {
   RANK_EXECUTED,
 } from '@src/enum/metadata-dump';
 
-
 @Injectable()
 export class CollectionService {
   private static readonly logger = new Logger(CollectionService.name);
@@ -53,39 +52,7 @@ export class CollectionService {
     }
   }
 
-  getPathDirectory(collection: Collection): string {
-    return `data/metadata/${collection.blockchain}/${collection.contract}/`;
-  }
-
-  async processSaveAttributes(collection: Collection): Promise<void> {
-    CollectionService.logger.log(
-      '[CollectionService] STEP 1 : Process token attributes binding',
-    );
-    const pathDirectory = this.getPathDirectory(collection);
-    try {
-      const traitTypes = await this.traitTypeService.saveTraitTypes(
-        collection,
-        pathDirectory,
-      );
-      await this.attributeService.saveAttributes(
-        collection,
-        traitTypes,
-        pathDirectory,
-      );
-    } catch (error) {
-      CollectionService.logger.error(
-        '[CollectionService] STEP 1 - Fail : Save trait type and attributes failed',
-      );
-    }
-  }
-
-  async processBindAttributes(collection: Collection): Promise<void> {
-    const attributes = await this.attributeService.findAll(collection);
-    const attributesDict = this.attributeService.sortAttributes(attributes);
-    const pathDirectory = this.getPathDirectory(collection);
-    const tokens = this.tokenService.createToken(collection, pathDirectory);
-    
-  }
+  async processBindAttributes(collection: Collection): Promise<void> {}
 
   processRank(collection: Collection): void {}
 }

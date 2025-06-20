@@ -13,9 +13,6 @@ export class TraitType {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('int', { nullable: true })
-  collectionId: number;
-
   @Column('varchar', { nullable: false, length: 255 })
   name: string;
 

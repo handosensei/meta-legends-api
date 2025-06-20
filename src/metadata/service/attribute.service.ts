@@ -19,50 +19,50 @@ export class AttributeService {
     private traitTypeService: TraitTypeService,
   ) {}
 
-  async saveAttributes(
-    collection: Collection,
-    traitTypes: TraitType[],
-    pathDirectory: string,
-  ): Promise<void> {
-    const files = fs.readdirSync(pathDirectory);
-    const attributesToSave: Attribute[] = [];
-    const attributesSaved: any[] = [];
-    for (const file of files) {
-      if (file == '.DS_Store') {
-        continue;
-      }
-      const attributes = this.traitTypeService.extractMetadataAttributes(
-        pathDirectory,
-        file,
-      );
-      const traitTypesDict = this.sortByName(traitTypes);
-      for (const attributeExtract of attributes) {
-        if (!(attributeExtract['trait_type'] in attributesSaved)) {
-          attributesSaved[attributeExtract['trait_type']] = [];
-        }
-        if (
-          attributesSaved[attributeExtract['trait_type']].includes(
-            attributeExtract['value'],
-          )
-        ) {
-          continue;
-        }
-        const attribute = new Attribute();
-        attribute.value = attributeExtract['value'];
-        attribute.collection = collection;
-        attribute.traitType = traitTypesDict[attributeExtract['trait_type']];
-        attributesToSave.push(attribute);
-        attributesSaved[attributeExtract['trait_type']].push(
-          attributeExtract['value'],
-        );
-      }
-      if (attributesToSave.length % 1000 === 0) {
-        await this.attributeRepository.save(attributesToSave);
-        attributesToSave.length = 0;
-      }
-    }
-    await this.attributeRepository.save(attributesToSave);
-  }
+  // async saveAttributes(
+  //   collection: Collection,
+  //   traitTypes: TraitType[],
+  //   pathDirectory: string,
+  // ): Promise<void> {
+  //   const files = fs.readdirSync(pathDirectory);
+  //   const attributesToSave: Attribute[] = [];
+  //   const attributesSaved: any[] = [];
+  //   for (const file of files) {
+  //     if (file == '.DS_Store') {
+  //       continue;
+  //     }
+  //     const attributes = this.traitTypeService.extractMetadataAttributes(
+  //       pathDirectory,
+  //       file,
+  //     );
+  //     const traitTypesDict = this.sortByName(traitTypes);
+  //     for (const attributeExtract of attributes) {
+  //       if (!(attributeExtract['trait_type'] in attributesSaved)) {
+  //         attributesSaved[attributeExtract['trait_type']] = [];
+  //       }
+  //       if (
+  //         attributesSaved[attributeExtract['trait_type']].includes(
+  //           attributeExtract['value'],
+  //         )
+  //       ) {
+  //         continue;
+  //       }
+  //       const attribute = new Attribute();
+  //       attribute.value = attributeExtract['value'];
+  //       attribute.collection = collection;
+  //       attribute.traitType = traitTypesDict[attributeExtract['trait_type']];
+  //       attributesToSave.push(attribute);
+  //       attributesSaved[attributeExtract['trait_type']].push(
+  //         attributeExtract['value'],
+  //       );
+  //     }
+  //     if (attributesToSave.length % 1000 === 0) {
+  //       await this.attributeRepository.save(attributesToSave);
+  //       attributesToSave.length = 0;
+  //     }
+  //   }
+  //   await this.attributeRepository.save(attributesToSave);
+  // }
 
   async findAll(collection: Collection): Promise<Attribute[]> {
     return await this.attributeRepository.find({

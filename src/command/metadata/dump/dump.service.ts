@@ -1,14 +1,24 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CollectionService } from '@src/metadata/service/collection.service';
 import { Command, CommandRunner } from 'nest-commander';
-import { RuntimeException } from '@nestjs/core/errors/exceptions';
-import {
-  ADDED,
-  RANK_EXECUTED, ATTRIBUTE_SAVED, ATTRIBUTE_BINDED,
-} from "@src/enum/metadata-dump";
+
+import * as fs from 'fs/promises';
+import path = require('path');
+
 import { TraitTypeService } from '@src/metadata/service/trait-type.service';
 import { AttributeService } from '@src/metadata/service/attribute.service';
 import { TokenAttributeService } from '@src/metadata/service/token-attribute.service';
+
+import { Collection } from '@src/metadata/entity/collection.entity';
+import { TraitType } from '@src/metadata/entity/trait-type.entity';
+
+import {
+  ADDED,
+  ATTRIBUTE_SAVED,
+  RANK_EXECUTED,
+  ATTRIBUTE_BINDED,
+} from '@src/enum/metadata-dump';
+
 /*
 npm run command-nest metadata-dump [contract] [name]
 npm run command-nest metadata-dump 0xf9c362cdd6eeba080dd87845e88512aa0a18c615 "Meta-Legends"
@@ -30,40 +40,40 @@ export class DumpService extends CommandRunner {
     super();
   }
 
-  async run(passedParam: string[]) {
+  async run(passedParam: string[]): Promise<void> {
     DumpService.logger.log('[Command] DumpService');
     const contract = passedParam[0];
     const name = passedParam[1];
-    const blockchain = passedParam[2];
+    const blockchain = passedParam[2] ?? 'ethereum';
     const collection = await this.collectionService.getOneByContractOrCreate(
       contract,
       name,
       blockchain,
     );
-
-    console.log(collection.status);
     try {
-      while (collection.status !== RANK_EXECUTED) {
+      // while (collection.status !== RANK_EXECUTED) {
+      while (collection.status !== ATTRIBUTE_SAVED) {
         switch (collection.status) {
           case ADDED:
             // sauvegarde les traits et attributs de la colections
-            this.collectionService.processSaveAttributes(collection);
+            const traitTypesToSave = await this.extractTraitTypes(collection);
+            await this.traitTypeService.save(traitTypesToSave);
             collection.status = ATTRIBUTE_SAVED;
             break;
-          case ATTRIBUTE_SAVED:
-            // création de lien entre les tokens et les attributs
-            this.collectionService.processBindAttributes(collection);
-            collection.status = ATTRIBUTE_BINDED;
-            break;
-          case ATTRIBUTE_BINDED:
-            // calcul du pourcentage et ranking
-            this.collectionService.processRank(collection);
-            collection.status = RANK_EXECUTED;
-            break;
-          default:
-            throw new RuntimeException(
-              `Unknown status '${collection.status}' for contract '${collection.contract}'`,
-            );
+          // case ATTRIBUTE_SAVED:
+          //   // création de lien entre les tokens et les attributs
+          //   this.collectionService.processBindAttributes(collection);
+          //   collection.status = ATTRIBUTE_BINDED;
+          //   break;
+          // case ATTRIBUTE_BINDED:
+          //   // calcul du pourcentage et ranking
+          //   this.collectionService.processRank(collection);
+          //   collection.status = RANK_EXECUTED;
+          //   break;
+          // default:
+          //   throw new RuntimeException(
+          //     `Unknown status '${collection.status}' for contract '${collection.contract}'`,
+          //   );
         }
       }
     } catch (error) {
@@ -72,4 +82,47 @@ export class DumpService extends CommandRunner {
       );
     }
   }
+
+  getPathDirectory(collection: Collection): string {
+    return path.join(
+      process.cwd(),
+      `data/metadata/${collection.blockchain}/${collection.contract}/`,
+    );
+  }
+
+  async extractMetadata(filepath) {
+    const data = await fs.readFile(filepath, 'utf-8');
+    return JSON.parse(data);
+  }
+
+  /**
+   * ADDED
+   * @param collection
+   */
+  async extractTraitTypes(collection: Collection): Promise<TraitType[]> {
+    const pathDirectory = this.getPathDirectory(collection);
+    const files = await fs.readdir(pathDirectory);
+    const traitTypesMap: Record<string, TraitType> = {};
+    const traitTypesToSave: TraitType[] = [];
+    for (const file of files) {
+      if (file === '.DS_Store') {
+        continue;
+      }
+      const metadata = await this.extractMetadata(`${pathDirectory}${file}`);
+      for (const attribute of metadata.attributes) {
+        const traitTypeName = attribute['trait_type'];
+        if (!traitTypesMap[traitTypeName]) {
+          const traitType = new TraitType();
+          traitType.name = traitTypeName;
+          traitType.collection = collection;
+          traitTypesMap[traitTypeName] = traitType;
+          traitTypesToSave.push(traitType);
+        }
+      }
+    }
+    return traitTypesToSave;
+  }
+
+  // ATTRIBUTE_SAVED
+  // ATTRIBUTE_BINDED
 }
