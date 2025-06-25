@@ -18,6 +18,7 @@ import {
   RANK_EXECUTED,
   ATTRIBUTE_BINDED,
 } from '@src/enum/metadata-dump';
+import { Attribute } from "@src/metadata/entity/attribute.entity";
 
 /*
 npm run command-nest metadata-dump [contract] [name]
@@ -56,8 +57,11 @@ export class DumpService extends CommandRunner {
         switch (collection.status) {
           case ADDED:
             // sauvegarde les traits et attributs de la colections
-            const traitTypesToSave = await this.extractTraitTypes(collection);
-            await this.traitTypeService.save(traitTypesToSave);
+            const metadataValues = await this.bindTraitTypeAndAttributes(
+              collection,
+            );
+            await this.traitTypeService.save(metadataValues['traitTypes']);
+            await this.attributeService.save(metadataValues['attributes']);
             collection.status = ATTRIBUTE_SAVED;
             break;
           // case ATTRIBUTE_SAVED:
@@ -99,11 +103,15 @@ export class DumpService extends CommandRunner {
    * ADDED
    * @param collection
    */
-  async extractTraitTypes(collection: Collection): Promise<TraitType[]> {
+  async bindTraitTypeAndAttributes(
+    collection: Collection,
+  ): Promise<{ traitTypes: TraitType[]; attributes: Attribute[] }> {
     const pathDirectory = this.getPathDirectory(collection);
     const files = await fs.readdir(pathDirectory);
-    const traitTypesMap: Record<string, TraitType> = {};
+    const traitTypesMap = {};
+    const attributesMap = {};
     const traitTypesToSave: TraitType[] = [];
+    const attributesToSave: Attribute[] = [];
     for (const file of files) {
       if (file === '.DS_Store') {
         continue;
@@ -111,16 +119,32 @@ export class DumpService extends CommandRunner {
       const metadata = await this.extractMetadata(`${pathDirectory}${file}`);
       for (const attribute of metadata.attributes) {
         const traitTypeName = attribute['trait_type'];
-        if (!traitTypesMap[traitTypeName]) {
+        const attributeValue = attribute['value'];
+        if (!(traitTypeName in traitTypesMap)) {
           const traitType = new TraitType();
           traitType.name = traitTypeName;
           traitType.collection = collection;
           traitTypesMap[traitTypeName] = traitType;
           traitTypesToSave.push(traitType);
         }
+        if (
+          traitTypeName in attributesMap &&
+          attributesMap[traitTypeName].includes(attributeValue)
+        ) {
+          continue;
+        }
+        if (!(traitTypeName in attributesMap)) {
+          attributesMap[traitTypeName] = [];
+        }
+        attributesMap[traitTypeName].push(attributeValue);
+        const currentAttribute = new Attribute();
+        currentAttribute.traitType = traitTypesMap[traitTypeName];
+        currentAttribute.collection = collection;
+        currentAttribute.value = attributeValue;
+        attributesToSave.push(currentAttribute);
       }
     }
-    return traitTypesToSave;
+    return { traitTypes: traitTypesToSave, attributes: attributesToSave };
   }
 
   // ATTRIBUTE_SAVED

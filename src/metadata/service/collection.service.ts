@@ -2,15 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import fs = require('fs');
-import path = require('path');
-
 import { TraitTypeService } from './trait-type.service';
 import { AttributeService } from './attribute.service';
 import { TokenService } from './token.service';
 
 import { Collection } from '@src/metadata/entity/collection.entity';
-import { TraitType } from '@src/metadata/entity/trait-type.entity';
 
 import {
   ADDED,
