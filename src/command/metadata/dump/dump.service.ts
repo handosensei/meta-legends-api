@@ -5,12 +5,14 @@ import { Command, CommandRunner } from 'nest-commander';
 import * as fs from 'fs/promises';
 import path = require('path');
 
-import { TraitTypeService } from '@src/metadata/service/trait-type.service';
 import { AttributeService } from '@src/metadata/service/attribute.service';
+import { TraitTypeService } from '@src/metadata/service/trait-type.service';
 import { TokenAttributeService } from '@src/metadata/service/token-attribute.service';
+import { TokenService } from '@src/metadata/service/token.service';
 
 import { Collection } from '@src/metadata/entity/collection.entity';
 import { TraitType } from '@src/metadata/entity/trait-type.entity';
+import { Attribute } from '@src/metadata/entity/attribute.entity';
 
 import {
   ADDED,
@@ -18,7 +20,6 @@ import {
   RANK_EXECUTED,
   ATTRIBUTE_BINDED,
 } from '@src/enum/metadata-dump';
-import { Attribute } from "@src/metadata/entity/attribute.entity";
 
 /*
 npm run command-nest metadata-dump [contract] [name]
@@ -37,6 +38,7 @@ export class DumpService extends CommandRunner {
     private traitTypeService: TraitTypeService,
     private attributeService: AttributeService,
     private tokenAttributeService: TokenAttributeService,
+    private tokenService: TokenService,
   ) {
     super();
   }
@@ -53,10 +55,11 @@ export class DumpService extends CommandRunner {
     );
     try {
       // while (collection.status !== RANK_EXECUTED) {
-      while (collection.status !== ATTRIBUTE_SAVED) {
+      while (collection.status !== ATTRIBUTE_BINDED) {
         switch (collection.status) {
           case ADDED:
             // sauvegarde les traits et attributs de la colections
+            DumpService.logger.log('[Command] DumpService : process ADDED');
             const metadataValues = await this.bindTraitTypeAndAttributes(
               collection,
             );
@@ -64,11 +67,17 @@ export class DumpService extends CommandRunner {
             await this.attributeService.save(metadataValues['attributes']);
             collection.status = ATTRIBUTE_SAVED;
             break;
-          // case ATTRIBUTE_SAVED:
-          //   // création de lien entre les tokens et les attributs
-          //   this.collectionService.processBindAttributes(collection);
-          //   collection.status = ATTRIBUTE_BINDED;
-          //   break;
+          case ATTRIBUTE_SAVED:
+            DumpService.logger.log(
+              '[Command] DumpService : process ATTRIBUTE_SAVED',
+            );
+            // création de lien entre les tokens et les attributs
+            const { tokens, tokenAttributes } =
+              await this.tokenAttributeService.bindTokenAttributes(collection);
+            await this.tokenService.save(tokens);
+            await this.tokenAttributeService.save(tokenAttributes);
+            collection.status = ATTRIBUTE_BINDED;
+            break;
           // case ATTRIBUTE_BINDED:
           //   // calcul du pourcentage et ranking
           //   this.collectionService.processRank(collection);
@@ -146,7 +155,4 @@ export class DumpService extends CommandRunner {
     }
     return { traitTypes: traitTypesToSave, attributes: attributesToSave };
   }
-
-  // ATTRIBUTE_SAVED
-  // ATTRIBUTE_BINDED
 }

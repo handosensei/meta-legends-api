@@ -48,7 +48,5 @@ export class CollectionService {
     }
   }
 
-  async processBindAttributes(collection: Collection): Promise<void> {}
-
   processRank(collection: Collection): void {}
 }

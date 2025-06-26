@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Attribute } from './attribute.entity';
 import { Token } from './token.entity';
 
@@ -6,12 +6,6 @@ import { Token } from './token.entity';
 export class TokenAttribute {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column('int', { nullable: true })
-  attributeId: number;
-
-  @Column('int', { nullable: true })
-  tokenId: number;
 
   @ManyToOne(() => Attribute, (attribute) => attribute.tokenAttributes)
   attribute: Attribute;

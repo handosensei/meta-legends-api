@@ -42,34 +42,11 @@ export class TokenService {
     return Number(file);
   }
 
-  async saveTokens(tokens: Token[]): Promise<Token[]> {
-    return await this.tokenRepository.save(tokens);
-  }
-
-  async createToken(
-    collection: Collection,
-    pathDirectory: string,
-  ): Promise<any[]> {
-    const files = fs.readdirSync(pathDirectory);
-    const tokens = [];
-    const tokensSaved = [];
-    for (const file of files) {
-      if (file == '.DS_Store') {
-        continue;
-      }
-      const metadata = this.traitTypeService.extractMetadataAttributes(
-        pathDirectory,
-        file,
-      );
-      const token = this.buildToken(collection, metadata, file);
-      tokens.push(token);
-      tokensSaved.push(token);
-      if (tokens.length % 1000 === 0) {
-        await this.tokenRepository.save(tokens);
-        tokens.length = 0;
-      }
+  async save(tokens: Token[]): Promise<void> {
+    const batchSize = 200;
+    for (let i = 0; i < tokens.length; i += batchSize) {
+      const chunk = tokens.slice(i, i + batchSize);
+      await this.tokenRepository.save(chunk);
     }
-    await this.tokenRepository.save(tokens);
-    return tokensSaved;
   }
 }
