@@ -8,12 +8,7 @@ import { TokenService } from './token.service';
 
 import { Collection } from '@src/metadata/entity/collection.entity';
 
-import {
-  ADDED,
-  ATTRIBUTE_SAVED,
-  ATTRIBUTE_BINDED,
-  RANK_EXECUTED,
-} from '@src/enum/metadata-dump';
+import { ADDED } from '@src/enum/metadata-dump';
 
 @Injectable()
 export class CollectionService {
@@ -47,6 +42,4 @@ export class CollectionService {
       console.log(error);
     }
   }
-
-  processRank(collection: Collection): void {}
 }

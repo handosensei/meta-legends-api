@@ -24,7 +24,7 @@ export class Attribute {
   @Column('varchar', { nullable: true, length: 255 })
   value: string;
 
-  @Column('double', { nullable: true })
+  @Column('decimal', { precision: 6, scale: 3, nullable: true })
   percent: number;
 
   @ManyToOne(() => TraitType, (traitType) => traitType.attributes)

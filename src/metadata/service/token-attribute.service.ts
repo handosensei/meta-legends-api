@@ -11,6 +11,7 @@ import { TokenService } from './token.service';
 import { TokenAttribute } from '../entity/token-attribute.entity';
 import { Collection } from '../entity/collection.entity';
 import { Token } from '../entity/token.entity';
+import { Attribute } from '../entity/attribute.entity';
 
 @Injectable()
 export class TokenAttributeService {
@@ -31,14 +32,18 @@ export class TokenAttributeService {
     }
   }
 
-  async bindTokenAttributes(
-    collection: Collection,
-  ): Promise<{ tokens: Token[]; tokenAttributes: TokenAttribute[] }> {
+  async bindTokenAttributes(collection: Collection): Promise<{
+    tokens: Token[];
+    tokenAttributes: TokenAttribute[];
+    attributesPercent: Attribute[];
+  }> {
     const tokenAttributesToSave: TokenAttribute[] = [];
     const tokensToSave: Token[] = [];
 
     const attributes = await this.attributeService.findAll(collection);
     const attributesSorted = this.attributeService.sortAttributes(attributes);
+    const attributesCounter =
+      this.attributeService.initCountAttributes(attributes);
 
     const pathDirectory = path.join(
       process.cwd(),
@@ -58,10 +63,23 @@ export class TokenAttributeService {
         tokenAttribute.token = token;
         const newAttribute =
           attributesSorted[attribute.trait_type][attribute.value];
+        attributesCounter[newAttribute.id]++;
         tokenAttribute.attribute = newAttribute;
         tokenAttributesToSave.push(tokenAttribute);
       }
     }
-    return { tokens: tokensToSave, tokenAttributes: tokenAttributesToSave };
+    const supply = collection.supply;
+    const attributesPercent: Attribute[] = [];
+    for (const attribute of attributes) {
+      const percent = (attributesCounter[attribute.id] / supply) * 100;
+      attribute.percent = Number(percent.toFixed(3));
+      attributesPercent.push(attribute);
+    }
+
+    return {
+      tokens: tokensToSave,
+      tokenAttributes: tokenAttributesToSave,
+      attributesPercent: attributesPercent,
+    };
   }
 }

@@ -15,7 +15,15 @@ export class AttributeService {
   ) {}
 
   async save(attributes: Attribute[]) {
-    return await this.attributeRepository.save(attributes);
+    const batchSize = 200;
+    try {
+      for (let i = 0; i < attributes.length; i += batchSize) {
+        const chunk = attributes.slice(i, i + batchSize);
+        await this.attributeRepository.save(chunk);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async findAll(collection: Collection): Promise<Attribute[]> {
@@ -40,5 +48,18 @@ export class AttributeService {
       attributesSorted[attribute.traitType.name][attribute.value] = attribute;
     }
     return attributesSorted;
+  }
+
+  initCountAttributes(attributes: Attribute[]) {
+    const attributesCounter = {};
+    for (const attribute of attributes) {
+      attributesCounter[attribute.id] = 0;
+    }
+    return attributesCounter;
+  }
+
+  async processAttributePercent(collection: Collection) {
+    const supply = collection.supply;
+    // const attributes = await this.findAll(collection);
   }
 }

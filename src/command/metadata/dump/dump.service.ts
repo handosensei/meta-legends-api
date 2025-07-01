@@ -20,6 +20,7 @@ import {
   RANK_EXECUTED,
   ATTRIBUTE_BINDED,
 } from '@src/enum/metadata-dump';
+import { RuntimeException } from "@nestjs/core/errors/exceptions";
 
 /*
 npm run command-nest metadata-dump [contract] [name]
@@ -72,21 +73,22 @@ export class DumpService extends CommandRunner {
               '[Command] DumpService : process ATTRIBUTE_SAVED',
             );
             // création de lien entre les tokens et les attributs
-            const { tokens, tokenAttributes } =
+            const { tokens, tokenAttributes, attributesPercent } =
               await this.tokenAttributeService.bindTokenAttributes(collection);
             await this.tokenService.save(tokens);
             await this.tokenAttributeService.save(tokenAttributes);
+            await this.attributeService.save(attributesPercent);
             collection.status = ATTRIBUTE_BINDED;
             break;
-          // case ATTRIBUTE_BINDED:
-          //   // calcul du pourcentage et ranking
-          //   this.collectionService.processRank(collection);
-          //   collection.status = RANK_EXECUTED;
-          //   break;
-          // default:
-          //   throw new RuntimeException(
-          //     `Unknown status '${collection.status}' for contract '${collection.contract}'`,
-          //   );
+          case ATTRIBUTE_BINDED:
+            // calcul du pourcentage et ranking
+            // await this.rankService.processAttributePercent(collection);
+            collection.status = RANK_EXECUTED;
+            break;
+          default:
+            throw new RuntimeException(
+              `Unknown status '${collection.status}' for contract '${collection.contract}'`,
+            );
         }
       }
     } catch (error) {
