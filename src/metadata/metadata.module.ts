@@ -18,7 +18,7 @@ import { TraitTypeService } from './service/trait-type.service';
 import { AttributeService } from './service/attribute.service';
 import { TokenAttributeService } from './service/token-attribute.service';
 import { TokenService } from './service/token.service';
-import { RankService } from './service/rank/rank.service';
+import { RankService } from './service/rank.service';
 
 @Module({
   imports: [
