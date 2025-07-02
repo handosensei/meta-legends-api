@@ -40,6 +40,7 @@ import { RankService } from './service/rank.service';
     AttributeService,
     TokenAttributeService,
     TokenService,
+    RankService,
   ],
   controllers: [LandController],
   providers: [

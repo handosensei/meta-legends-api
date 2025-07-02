@@ -9,6 +9,7 @@ import { AttributeService } from '@src/metadata/service/attribute.service';
 import { TraitTypeService } from '@src/metadata/service/trait-type.service';
 import { TokenAttributeService } from '@src/metadata/service/token-attribute.service';
 import { TokenService } from '@src/metadata/service/token.service';
+import { RankService } from '@src/metadata/service/rank.service';
 
 import { Collection } from '@src/metadata/entity/collection.entity';
 import { TraitType } from '@src/metadata/entity/trait-type.entity';
@@ -20,7 +21,7 @@ import {
   RANK_EXECUTED,
   ATTRIBUTE_BINDED,
 } from '@src/enum/metadata-dump';
-import { RuntimeException } from "@nestjs/core/errors/exceptions";
+import { RuntimeException } from '@nestjs/core/errors/exceptions';
 
 /*
 npm run command-nest metadata-dump [contract] [name]
@@ -40,6 +41,7 @@ export class DumpService extends CommandRunner {
     private attributeService: AttributeService,
     private tokenAttributeService: TokenAttributeService,
     private tokenService: TokenService,
+    private rankService: RankService,
   ) {
     super();
   }
@@ -55,8 +57,8 @@ export class DumpService extends CommandRunner {
       blockchain,
     );
     try {
-      // while (collection.status !== RANK_EXECUTED) {
-      while (collection.status !== ATTRIBUTE_BINDED) {
+      while (collection.status !== RANK_EXECUTED) {
+      // while (collection.status !== ATTRIBUTE_BINDED) {
         switch (collection.status) {
           case ADDED:
             // sauvegarde les traits et attributs de la colections
@@ -82,7 +84,7 @@ export class DumpService extends CommandRunner {
             break;
           case ATTRIBUTE_BINDED:
             // calcul du pourcentage et ranking
-            // await this.rankService.processAttributePercent(collection);
+            await this.rankService.process(collection);
             collection.status = RANK_EXECUTED;
             break;
           default:

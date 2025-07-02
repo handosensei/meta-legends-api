@@ -57,9 +57,4 @@ export class AttributeService {
     }
     return attributesCounter;
   }
-
-  async processAttributePercent(collection: Collection) {
-    const supply = collection.supply;
-    // const attributes = await this.findAll(collection);
-  }
 }

@@ -49,4 +49,10 @@ export class TokenService {
       await this.tokenRepository.save(chunk);
     }
   }
+
+  async findAll(): Promise<Token[]> {
+    return await this.tokenRepository.find({
+      relations: ['tokenAttributes', 'tokenAttributes.attribute'],
+    });
+  }
 }
