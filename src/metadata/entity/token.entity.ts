@@ -30,6 +30,9 @@ export class Token {
   @Column('varchar', { nullable: true })
   animationUrl: string;
 
+  @Column('decimal', { precision: 9, scale: 3, nullable: true })
+  score: number;
+
   @ManyToOne(() => Collection, (collection) => collection.tokens)
   collection: Collection;
 

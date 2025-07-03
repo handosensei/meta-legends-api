@@ -52,7 +52,11 @@ export class TokenService {
 
   async findAll(): Promise<Token[]> {
     return await this.tokenRepository.find({
-      relations: ['tokenAttributes', 'tokenAttributes.attribute'],
+      relations: [
+        'tokenAttributes',
+        'tokenAttributes.attribute',
+        'tokenAttributes.attribute.traitType',
+      ],
     });
   }
 }

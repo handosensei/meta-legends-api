@@ -16,6 +16,9 @@ export class TraitType {
   @Column('varchar', { nullable: false, length: 255 })
   name: string;
 
+  @Column('int', { nullable: true })
+  weigth: number;
+
   @ManyToOne(() => Collection, (collection) => collection.traitTypes)
   collection: Collection;
 

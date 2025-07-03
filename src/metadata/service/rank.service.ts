@@ -20,7 +20,7 @@ export class RankService {
     private tokenService: TokenService,
   ) {}
 
-  async process(collection: Collection) {
+  async process(collection: Collection): Promise<Token[]> {
     RankService.logger.log(`Processing rank for collection ${collection.name}`);
     const attributes = await this.attributeService.findAll(collection);
     const points = {};
@@ -28,19 +28,19 @@ export class RankService {
       points[attribute.id] = 1 / attribute.percent;
     }
     const tokens: Token[] = await this.tokenService.findAll();
-    const tokenScore = {};
+    const tokensScored: Token[] = [];
     for (const token of tokens) {
       let scoreToken = 0;
       for (const tokenAttribute of token.tokenAttributes) {
-        scoreToken += points[tokenAttribute.attribute.id];
+        let weight = 1;
+        if (tokenAttribute.attribute.traitType.weigth !== null) {
+          weight = tokenAttribute.attribute.traitType.weigth;
+        }
+        scoreToken += points[tokenAttribute.attribute.id] * weight;
       }
-      tokenScore[token.id] = { score: scoreToken, rank: 0 };
+      token.score = Number(scoreToken.toFixed(3));
+      tokensScored.push(token);
     }
-    this.defineRankTokens(tokenScore);
-    return tokenScore;
-  }
-
-  defineRankTokens(tokenScore: any) {
-    return tokenScore;
+    return tokensScored;
   }
 }

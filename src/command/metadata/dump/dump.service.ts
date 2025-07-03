@@ -58,7 +58,6 @@ export class DumpService extends CommandRunner {
     );
     try {
       while (collection.status !== RANK_EXECUTED) {
-      // while (collection.status !== ATTRIBUTE_BINDED) {
         switch (collection.status) {
           case ADDED:
             // sauvegarde les traits et attributs de la colections
@@ -84,7 +83,8 @@ export class DumpService extends CommandRunner {
             break;
           case ATTRIBUTE_BINDED:
             // calcul du pourcentage et ranking
-            await this.rankService.process(collection);
+            const tokensScored = await this.rankService.process(collection);
+            await this.tokenService.save(tokensScored);
             collection.status = RANK_EXECUTED;
             break;
           default:
