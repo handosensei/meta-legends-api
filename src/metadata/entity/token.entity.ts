@@ -3,12 +3,10 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Collection } from './collection.entity';
 import { TokenAttribute } from './token-attribute.entity';
-import { Rank } from './rank.entity';
 
 @Entity()
 export class Token {
@@ -33,12 +31,12 @@ export class Token {
   @Column('decimal', { precision: 9, scale: 3, nullable: true })
   score: number;
 
+  @Column('int', { nullable: true })
+  rank: number;
+
   @ManyToOne(() => Collection, (collection) => collection.tokens)
   collection: Collection;
 
   @OneToMany(() => TokenAttribute, (tokenAttribute) => tokenAttribute.token)
   tokenAttributes: TokenAttribute[];
-
-  @OneToOne(() => Rank, (rank) => rank.token)
-  rank: Rank;
 }

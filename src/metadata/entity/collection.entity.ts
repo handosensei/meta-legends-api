@@ -1,6 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Attribute } from './attribute.entity';
-import { Rank } from './rank.entity';
 import { Token } from './token.entity';
 import { TraitType } from './trait-type.entity';
 
@@ -35,7 +34,4 @@ export class Collection {
 
   @OneToMany(() => Token, (token) => token.collection)
   tokens: Token[];
-
-  @OneToMany(() => Rank, (rank) => rank.collection)
-  ranks: Rank[];
 }

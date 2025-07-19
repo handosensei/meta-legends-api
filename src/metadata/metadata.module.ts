@@ -10,7 +10,6 @@ import { Collection } from './entity/collection.entity';
 import { TraitType } from './entity/trait-type.entity';
 import { Attribute } from './entity/attribute.entity';
 import { Token } from './entity/token.entity';
-import { Rank } from './entity/rank.entity';
 import { TokenAttribute } from './entity/token-attribute.entity';
 
 import { CollectionService } from './service/collection.service';
@@ -27,7 +26,6 @@ import { RankService } from './service/rank.service';
       TraitType,
       Attribute,
       Token,
-      Rank,
       TokenAttribute,
     ]),
     LandModule,

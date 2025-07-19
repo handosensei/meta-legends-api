@@ -46,7 +46,6 @@ import { Collection } from './metadata/entity/collection.entity';
 import { TraitType } from './metadata/entity/trait-type.entity';
 import { Attribute } from './metadata/entity/attribute.entity';
 import { Token } from './metadata/entity/token.entity';
-import { Rank } from './metadata/entity/rank.entity';
 import { TokenAttribute } from './metadata/entity/token-attribute.entity';
 
 import { AchievementService as AchievementCommand } from './command/achievement/achievement.service';
@@ -126,7 +125,6 @@ import { DumpService } from '@src/command/metadata/dump/dump.service';
         TraitType,
         Attribute,
         Token,
-        Rank,
         TokenAttribute,
       ],
       synchronize: true,
