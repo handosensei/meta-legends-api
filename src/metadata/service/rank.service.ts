@@ -1,12 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
 import { AttributeService } from '@src/metadata/service/attribute.service';
 import { TokenService } from './token.service';
 
 import { Collection } from '../entity/collection.entity';
-import { Rank } from '../entity/rank.entity';
 import { Token } from '../entity/token.entity';
 
 @Injectable()
@@ -14,8 +11,6 @@ export class RankService {
   private static readonly logger = new Logger(RankService.name);
 
   constructor(
-    @InjectRepository(Rank)
-    private rankRepository: Repository<Rank>,
     private attributeService: AttributeService,
     private tokenService: TokenService,
   ) {}
@@ -42,5 +37,20 @@ export class RankService {
       tokensScored.push(token);
     }
     return tokensScored;
+  }
+
+  async defineRank(): Promise<Token[]> {
+    const tokens: Token[] = await this.tokenService.findAll();
+    RankService.logger.log(`Sort tokens by score for collection`);
+    // Sort tokens by score in descending order (highest score first)
+    const tokensSorted = tokens.sort((a, b) => b.score - a.score);
+
+    // Assign ranks sequentially (1, 2, 3, etc.) based on the sorted order
+    // Lower rank means higher score
+    for (let i = 0; i < tokensSorted.length; i++) {
+      tokensSorted[i].rank = i + 1;
+    }
+
+    return tokensSorted;
   }
 }

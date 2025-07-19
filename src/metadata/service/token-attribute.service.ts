@@ -50,32 +50,41 @@ export class TokenAttributeService {
       `data/metadata/${collection.blockchain}/${collection.contract}/`,
     );
     const files = await fs.readdir(pathDirectory);
-    for (const file of files) {
-      if (file === '.DS_Store') {
-        continue;
+    try {
+      for (const file of files) {
+        if (file === '.DS_Store') {
+          continue;
+        }
+        const data = await fs.readFile(`${pathDirectory}${file}`, 'utf-8');
+        const metadata = JSON.parse(data);
+        const token = this.tokenService.buildToken(collection, metadata, file);
+        tokensToSave.push(token);
+        for (const attribute of metadata.attributes) {
+          const tokenAttribute = new TokenAttribute();
+          tokenAttribute.token = token;
+          const newAttribute =
+            attributesSorted[attribute.trait_type][attribute.value];
+          attributesCounter[newAttribute.id]++;
+          tokenAttribute.attribute = newAttribute;
+          tokenAttributesToSave.push(tokenAttribute);
+        }
       }
-      const data = await fs.readFile(`${pathDirectory}${file}`, 'utf-8');
-      const metadata = JSON.parse(data);
-      const token = this.tokenService.buildToken(collection, metadata, file);
-      tokensToSave.push(token);
-      for (const attribute of metadata.attributes) {
-        const tokenAttribute = new TokenAttribute();
-        tokenAttribute.token = token;
-        const newAttribute =
-          attributesSorted[attribute.trait_type][attribute.value];
-        attributesCounter[newAttribute.id]++;
-        tokenAttribute.attribute = newAttribute;
-        tokenAttributesToSave.push(tokenAttribute);
-      }
+    } catch (error) {
+      console.log('build token-attribute failed:');
+      console.log(error);
     }
     const supply = collection.supply;
     const attributesPercent: Attribute[] = [];
-    for (const attribute of attributes) {
-      const percent = (attributesCounter[attribute.id] / supply) * 100;
-      attribute.percent = Number(percent.toFixed(3));
-      attributesPercent.push(attribute);
+    try {
+      for (const attribute of attributes) {
+        const percent = (attributesCounter[attribute.id] / supply) * 100;
+        attribute.percent = Number(percent.toFixed(3));
+        attributesPercent.push(attribute);
+      }
+    } catch (error) {
+      console.log('build attribute percent failed:');
+      console.log(error);
     }
-
     return {
       tokens: tokensToSave,
       tokenAttributes: tokenAttributesToSave,

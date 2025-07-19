@@ -19,8 +19,9 @@ import {
   ADDED,
   ATTRIBUTE_SAVED,
   RANK_EXECUTED,
-  ATTRIBUTE_BINDED,
-} from '@src/enum/metadata-dump';
+  TOKENS_SCORED,
+  ATTRIBUTE_BINDED, WEIGHTS
+} from "@src/enum/metadata-dump";
 import { RuntimeException } from '@nestjs/core/errors/exceptions';
 
 /*
@@ -47,7 +48,6 @@ export class DumpService extends CommandRunner {
   }
 
   async run(passedParam: string[]): Promise<void> {
-    DumpService.logger.log('[Command] DumpService');
     const contract = passedParam[0];
     const name = passedParam[1];
     const blockchain = passedParam[2] ?? 'ethereum';
@@ -68,6 +68,7 @@ export class DumpService extends CommandRunner {
             await this.traitTypeService.save(metadataValues['traitTypes']);
             await this.attributeService.save(metadataValues['attributes']);
             collection.status = ATTRIBUTE_SAVED;
+            await this.collectionService.save(collection);
             break;
           case ATTRIBUTE_SAVED:
             DumpService.logger.log(
@@ -76,16 +77,46 @@ export class DumpService extends CommandRunner {
             // création de lien entre les tokens et les attributs
             const { tokens, tokenAttributes, attributesPercent } =
               await this.tokenAttributeService.bindTokenAttributes(collection);
-            await this.tokenService.save(tokens);
-            await this.tokenAttributeService.save(tokenAttributes);
-            await this.attributeService.save(attributesPercent);
+            DumpService.logger.log(
+              '[Command] DumpService : process ATTRIBUTE_SAVED - save tokens, their attributes and percents',
+            );
+            DumpService.logger.log('bindTokenAttributes done');
+            try {
+              await this.tokenService.save(tokens);
+            } catch (error) {
+              console.log(`Failed tokens save ${error}`);
+            }
+            try {
+              await this.tokenAttributeService.save(tokenAttributes);
+            } catch (error) {
+              console.log(`Failed tokenAttributes save ${error}`);
+            }
+            try {
+              await this.attributeService.save(attributesPercent);
+            } catch (error) {
+              console.log(`Failed attributesPercent save ${error}`);
+            }
             collection.status = ATTRIBUTE_BINDED;
+            await this.collectionService.save(collection);
             break;
           case ATTRIBUTE_BINDED:
+            DumpService.logger.log(
+              '[Command] DumpService : process ATTRIBUTE_BINDED',
+            );
             // calcul du pourcentage et ranking
             const tokensScored = await this.rankService.process(collection);
             await this.tokenService.save(tokensScored);
+            collection.status = TOKENS_SCORED;
+            await this.collectionService.save(collection);
+            break;
+          case TOKENS_SCORED:
+            DumpService.logger.log(
+              '[Command] DumpService : process TOKENS_SCORED',
+            );
+            const tokensRanked = await this.rankService.defineRank();
+            await this.tokenService.save(tokensRanked);
             collection.status = RANK_EXECUTED;
+            await this.collectionService.save(collection);
             break;
           default:
             throw new RuntimeException(
@@ -138,6 +169,9 @@ export class DumpService extends CommandRunner {
           traitType.name = traitTypeName;
           traitType.collection = collection;
           traitTypesMap[traitTypeName] = traitType;
+          if (traitTypeName in WEIGHTS) {
+            traitType.weigth = WEIGHTS[traitTypeName];
+          }
           traitTypesToSave.push(traitType);
         }
         if (

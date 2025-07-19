@@ -42,4 +42,8 @@ export class CollectionService {
       console.log(error);
     }
   }
+
+  async save(collections: Collection): Promise<Collection> {
+    return await this.collectionRepository.save(collections);
+  }
 }
