@@ -2,10 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { TraitTypeService } from './trait-type.service';
-import { AttributeService } from './attribute.service';
-import { TokenService } from './token.service';
-
 import { Collection } from '@src/metadata/entity/collection.entity';
 
 import { ADDED } from '@src/enum/metadata-dump';
@@ -17,9 +13,6 @@ export class CollectionService {
   constructor(
     @InjectRepository(Collection)
     private collectionRepository: Repository<Collection>,
-    private traitTypeService: TraitTypeService,
-    private attributeService: AttributeService,
-    private tokenService: TokenService,
   ) {}
 
   async getOneByContractOrCreate(
@@ -41,6 +34,14 @@ export class CollectionService {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async getCollectionByContract(contract: string): Promise<Collection> {
+    const collection = await this.collectionRepository.findOneBy({ contract });
+    if (collection !== null) {
+      throw new Error('Collection not found');
+    }
+    return collection;
   }
 
   async save(collections: Collection): Promise<Collection> {

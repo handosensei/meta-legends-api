@@ -5,9 +5,6 @@ import { Repository } from 'typeorm';
 import { Token } from '../entity/token.entity';
 import { Collection } from '../entity/collection.entity';
 
-import fs = require('fs');
-import { TraitTypeService } from './trait-type.service';
-
 @Injectable()
 export class TokenService {
   private static readonly logger = new Logger(TokenService.name);
@@ -15,7 +12,6 @@ export class TokenService {
   constructor(
     @InjectRepository(Token)
     private tokenRepository: Repository<Token>,
-    private traitTypeService: TraitTypeService,
   ) {}
 
   buildToken(collection: Collection, metadata: any, file: string) {
@@ -58,5 +54,17 @@ export class TokenService {
         'tokenAttributes.attribute.traitType',
       ],
     });
+  }
+
+  async filterByContractCollection(contract: string): Promise<Token[]> {
+    return await this.tokenRepository
+      .createQueryBuilder('token')
+      .leftJoinAndSelect('token.collection', 'collection')
+      .leftJoinAndSelect('token.tokenAttributes', 'tokenAttribute')
+      .leftJoinAndSelect('tokenAttribute.attribute', 'attribute')
+      .leftJoinAndSelect('attribute.traitType', 'traitType')
+      .where('collection.contract = :contract', { contract })
+      .take(50)
+      .getMany();
   }
 }

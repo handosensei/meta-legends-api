@@ -18,6 +18,7 @@ import { AttributeService } from './service/attribute.service';
 import { TokenAttributeService } from './service/token-attribute.service';
 import { TokenService } from './service/token.service';
 import { RankService } from './service/rank.service';
+import { MetadataController } from './metadata.controller';
 
 @Module({
   imports: [
@@ -40,7 +41,7 @@ import { RankService } from './service/rank.service';
     TokenService,
     RankService,
   ],
-  controllers: [LandController],
+  controllers: [LandController, MetadataController],
   providers: [
     MetadataService,
     CollectionService,
